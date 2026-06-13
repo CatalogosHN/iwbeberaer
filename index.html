@@ -594,11 +594,11 @@
           <div class="github-grid">
             <div class="field">
               <label>Usuario / owner</label>
-              <input id="ghOwner" placeholder="tu_usuario">
+              <input id="ghOwner" placeholder="CatalogosHN" value="CatalogosHN">
             </div>
             <div class="field">
               <label>Repositorio</label>
-              <input id="ghRepo" placeholder="mi-repositorio">
+              <input id="ghRepo" placeholder="iwbeberaer" value="iwbeberaer">
             </div>
             <div class="field">
               <label>Rama</label>
@@ -1745,8 +1745,8 @@
       let config = {};
       try{ config = JSON.parse(localStorage.getItem(GITHUB_CONFIG_KEY) || "{}"); }catch(e){}
 
-      document.getElementById("ghOwner").value = config.owner || "";
-      document.getElementById("ghRepo").value = config.repo || "";
+      document.getElementById("ghOwner").value = config.owner || "CatalogosHN";
+      document.getElementById("ghRepo").value = config.repo || "iwbeberaer";
       document.getElementById("ghBranch").value = config.branch || "main";
       document.getElementById("ghPath").value = config.path || "index.html";
 
@@ -1757,8 +1757,8 @@
 
     function getGithubConfig(){
       return {
-        owner:document.getElementById("ghOwner").value.trim(),
-        repo:document.getElementById("ghRepo").value.trim(),
+        owner:document.getElementById("ghOwner").value.trim() || "CatalogosHN",
+        repo:document.getElementById("ghRepo").value.trim() || "iwbeberaer",
         branch:document.getElementById("ghBranch").value.trim() || "main",
         path:document.getElementById("ghPath").value.trim() || "index.html",
         token:document.getElementById("ghToken").value.trim(),
