@@ -1,7 +1,8 @@
 <!DOCTYPE html>
-<html lang="es-HN"><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/content/location/location.js" id="eppiocemhmnlbhjplcgkofciiegomcon"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/extend-native-history-api.js"></script><script src="chrome-extension://eppiocemhmnlbhjplcgkofciiegomcon/libs/requests.js"></script><head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="es-HN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lista de Pagos</title>
 
   <style>
@@ -168,39 +169,120 @@
       box-shadow:0 0 0 4px rgba(0,120,255,.12);
     }
 
-    .list{display:grid;gap:10px}
+    .list{
+      display:grid;
+      gap:14px;
+    }
 
     .month{
       background:var(--card);
-      border:1px solid var(--line);
-      border-radius:18px;
+      border:2px solid var(--line);
+      border-left-width:8px;
+      border-radius:22px;
       box-shadow:var(--shadow);
       overflow:hidden;
     }
 
-    .line{
-      display:grid;
-      align-items:center;
-      border-bottom:1px solid var(--line);
+    .month.status-pagado{
+      border-color:#bde8cf;
+      border-left-color:var(--green);
     }
 
-    .line:last-child{border-bottom:0}
+    .month.status-parcial{
+      border-color:#f3d18a;
+      border-left-color:var(--yellow);
+    }
 
-    .line1{
-      grid-template-columns:1fr auto auto;
-      gap:10px;
-      padding:11px;
+    .month.status-pendiente{
+      border-color:#ffc8c8;
+      border-left-color:var(--red);
+    }
+
+    details.month > summary{
+      list-style:none;
+      cursor:pointer;
+    }
+
+    details.month > summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .month-summary{
+      padding:14px;
+      display:grid;
+      grid-template-columns:1fr auto;
+      gap:12px;
+      align-items:center;
       background:#fff;
     }
 
-    .date{font-weight:950;font-size:17px}
+    .month-title-block{
+      min-width:0;
+    }
 
-    .date small{
-      display:block;
+    .month-name{
+      font-size:20px;
+      font-weight:950;
+      letter-spacing:-.02em;
+      line-height:1.1;
+    }
+
+    .month-date{
+      margin-top:4px;
       color:var(--muted);
-      font-weight:700;
-      font-size:12px;
+      font-weight:750;
+      font-size:13px;
+    }
+
+    .month-summary-right{
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      gap:7px;
+      flex-wrap:wrap;
+      text-align:right;
+    }
+
+    .month-total-mini{
+      border:1px solid var(--line);
+      background:#fbfdff;
+      border-radius:14px;
+      padding:8px 10px;
+      min-width:135px;
+    }
+
+    .month-total-label{
+      color:var(--muted);
+      font-size:10px;
+      font-weight:950;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .month-total-value{
       margin-top:2px;
+      font-weight:950;
+      font-size:15px;
+      white-space:nowrap;
+    }
+
+    .open-hint{
+      color:var(--blue);
+      background:var(--blue-bg);
+      border:1px solid #c9e1ff;
+      border-radius:999px;
+      padding:6px 10px;
+      font-size:12px;
+      font-weight:950;
+      white-space:nowrap;
+    }
+
+    details[open] .open-hint::after{
+      content:" abiertos";
+    }
+
+    details:not([open]) .open-hint::after{
+      content:" detalles";
     }
 
     .pill{
@@ -221,27 +303,32 @@
     .neutro{color:#475467;background:var(--gray-bg);border-color:var(--line)}
     .admin-pill{color:var(--blue);background:var(--blue-bg);border-color:#c9e1ff}
 
-    .line2{
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    .month-body{
+      border-top:1px solid var(--line);
       background:#fbfdff;
+      padding:12px;
+    }
+
+    .line2{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;
     }
 
     .cell{
       padding:10px;
-      border-right:1px solid var(--line);
-      border-bottom:1px solid var(--line);
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
       min-width:0;
     }
-
-    .cell:nth-last-child(-n+4){border-bottom:0}
 
     .concept{
       font-weight:950;
       font-size:14px;
-      margin-bottom:5px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
+      margin-bottom:6px;
+      white-space:normal;
+      overflow-wrap:anywhere;
     }
 
     .mini{
@@ -253,7 +340,9 @@
     .mini strong{color:var(--text)}
 
     .line3{
-      grid-template-columns:1fr;
+      margin-top:10px;
+      border:1px dashed #cbd8ea;
+      border-radius:16px;
       padding:10px 11px;
       background:#fff;
       color:#344054;
@@ -517,20 +606,119 @@
     }
 
     @media(max-width:720px){
-      .app{padding:9px}
-      .tools{grid-template-columns:1fr}
-      .line1{grid-template-columns:1fr}
-      .line2{grid-template-columns:1fr 1fr}
-      .top-actions{width:100%}
-      .top-actions .btn{flex:1}
-      .form-grid,.github-grid,.extra-grid{grid-template-columns:1fr}
-      .month-paid-box{min-width:170px}
+      .app{
+        padding:10px;
+        max-width:520px;
+      }
+
+      .header{
+        border-radius:20px;
+        text-align:center;
+      }
+
+      .top{
+        justify-content:center;
+        text-align:center;
+      }
+
+      .top-actions{
+        width:100%;
+      }
+
+      .top-actions .btn{
+        flex:1;
+      }
+
+      .monthly-summary{
+        justify-content:flex-start;
+        padding-bottom:6px;
+      }
+
+      .month-paid-box{
+        min-width:210px;
+        text-align:left;
+      }
+
+      .tools{
+        grid-template-columns:1fr;
+      }
+
+      .list{
+        gap:14px;
+      }
+
+      .month{
+        border-left-width:7px;
+        border-radius:22px;
+      }
+
+      .month-summary{
+        grid-template-columns:1fr;
+        text-align:center;
+        padding:14px 12px;
+      }
+
+      .month-summary-right{
+        justify-content:center;
+        text-align:center;
+        width:100%;
+      }
+
+      .month-total-mini{
+        min-width:0;
+        flex:1 1 42%;
+        text-align:center;
+      }
+
+      .open-hint{
+        width:100%;
+      }
+
+      .line2{
+        grid-template-columns:1fr;
+      }
+
+      .cell{
+        text-align:center;
+        padding:12px;
+      }
+
+      .concept{
+        font-size:16px;
+      }
+
+      .mini{
+        font-size:13px;
+      }
+
+      .line3{
+        text-align:left;
+        font-size:13px;
+      }
+
+      .form-grid,.github-grid,.extra-grid{
+        grid-template-columns:1fr;
+      }
     }
 
     @media(max-width:420px){
-      .line2{grid-template-columns:1fr}
-      .cell{border-right:0!important;border-bottom:1px solid var(--line)}
-      .cell:last-child{border-bottom:0}
+      h1{font-size:24px}
+
+      .month-paid-box{
+        min-width:82vw;
+      }
+
+      .month-name{
+        font-size:19px;
+      }
+
+      .month-total-mini{
+        flex:1 1 100%;
+      }
+
+      .btn{
+        padding:9px 10px;
+      }
     }
 
     @media print{
@@ -538,6 +726,8 @@
       .header,.tools{position:static;box-shadow:none}
       .tools,.admin-section,.top-actions{display:none!important}
       .month{box-shadow:none;break-inside:avoid}
+      details.month{display:block}
+      details.month .month-body{display:block!important}
     }
   </style>
 </head>
@@ -548,7 +738,7 @@
       <div class="top">
         <div>
           <h1 id="title">Lista de Pagos</h1>
-          <p class="sub" id="subtitle">Vista simple por mes con conceptos, transferencias y notas.</p>
+          <p class="sub" id="subtitle">Toca cada mes para ver el detalle completo.</p>
         </div>
         <div class="top-actions">
           <button class="btn public-section" onclick="window.print()">🖨️ PDF</button>
@@ -571,7 +761,7 @@
     </section>
 
     <section class="tools public-section">
-      <input id="search" type="search" placeholder="Buscar fecha, banco, nota o concepto..." oninput="renderPublic()">
+      <input id="search" type="search" placeholder="Buscar fecha, banco, nota o concepto..." oninput="renderPublic()" />
       <select id="filter" onchange="renderPublic()">
         <option value="todos">Todos</option>
         <option value="pendiente">Pendiente</option>
@@ -691,13 +881,13 @@
       </section>
 
       <section class="tools">
-        <input id="adminSearch" type="search" placeholder="Buscar en admin..." oninput="renderAdmin()">
+        <input id="adminSearch" type="search" placeholder="Buscar en admin..." oninput="renderAdmin()" />
         <select id="adminMonthFilter" onchange="renderAdmin()">
           <option value="todos">Todos los meses</option>
         </select>
       </section>
 
-      <textarea id="copybox" class="copybox" readonly=""></textarea>
+      <textarea id="copybox" class="copybox" readonly></textarea>
       <main class="admin-grid" id="adminList"></main>
     </section>
   </div>
@@ -709,7 +899,7 @@
 
       <div class="field">
         <label>License Key</label>
-        <input id="licenseInput" type="password" placeholder="Pega tu licencia KeyAuth" autocomplete="off">
+        <input id="licenseInput" type="password" placeholder="Pega tu licencia KeyAuth" autocomplete="off" />
       </div>
 
       <div id="loginError" class="login-error"></div>
@@ -1246,10 +1436,10 @@
       "Ficohsa"
     ];
 
-    const STORAGE_KEY = "lista_pagos_datos_v4";
-    const ADMIN_SESSION_KEY = "lista_pagos_admin_ok_v4";
-    const GITHUB_CONFIG_KEY = "lista_pagos_github_config_v4";
-    const GITHUB_TOKEN_KEY = "lista_pagos_github_token_v4";
+    const STORAGE_KEY = "lista_pagos_datos_v5";
+    const ADMIN_SESSION_KEY = "lista_pagos_admin_ok_v5";
+    const GITHUB_CONFIG_KEY = "lista_pagos_github_config_v5";
+    const GITHUB_TOKEN_KEY = "lista_pagos_github_token_v5";
 
     const CLEAN_HTML_TEMPLATE = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
     let datos = loadData();
@@ -1379,6 +1569,12 @@
       }, {total:0,pagado:0,faltante:0,pagados:0,parciales:0,pendientes:0});
     }
 
+    function monthClass(t){
+      if(t.total > 0 && t.faltante <= 0) return "status-pagado";
+      if(t.pagado > 0) return "status-parcial";
+      return "status-pendiente";
+    }
+
     function renderMonthlySummary(months){
       document.getElementById("monthlySummary").innerHTML = months.map(m => {
         const t = monthTotals(m.items);
@@ -1426,7 +1622,8 @@
           ${statusPill(i.estado)}
           <div class="mini">
             Monto: <strong>${money(i.monto)}</strong><br>
-            Pagó: <strong>${money(i.pagado)}</strong> · Falta: <strong>${money(i.faltante)}</strong>
+            Pagó: <strong>${money(i.pagado)}</strong><br>
+            Falta: <strong>${money(i.faltante)}</strong>
           </div>
         </div>
       `;
@@ -1434,23 +1631,37 @@
 
     function monthCard(month){
       const t = monthTotals(month.items);
+      const cls = monthClass(t);
       return `
-        <section class="month">
-          <div class="line line1">
-            <div class="date">
-              ${esc(month.fecha)}
-              <small>${longDate(month.fecha)}</small>
+        <details class="month ${cls}">
+          <summary class="month-summary">
+            <div class="month-title-block">
+              <div class="month-name">${esc(monthTitle(month.fecha))}</div>
+              <div class="month-date">${esc(month.fecha)} · ${longDate(month.fecha)}</div>
             </div>
-            ${monthStatus(t)}
-            <span class="pill neutro">Falta ${money(t.faltante)}</span>
+            <div class="month-summary-right">
+              ${monthStatus(t)}
+              <div class="month-total-mini">
+                <div class="month-total-label">Total pagado</div>
+                <div class="month-total-value">${money(t.pagado)}</div>
+              </div>
+              <div class="month-total-mini">
+                <div class="month-total-label">Faltante</div>
+                <div class="month-total-value">${money(t.faltante)}</div>
+              </div>
+              <span class="open-hint">Ver</span>
+            </div>
+          </summary>
+
+          <div class="month-body">
+            <div class="line2">
+              ${month.items.map(conceptCell).join("")}
+            </div>
+            <div class="line3">
+              <strong>Transferencias / notas:</strong> ${transferText(month.items)}
+            </div>
           </div>
-          <div class="line line2">
-            ${month.items.map(conceptCell).join("")}
-          </div>
-          <div class="line line3">
-            <strong>Transferencias / notas:</strong> ${transferText(month.items)}
-          </div>
-        </section>
+        </details>
       `;
     }
 
@@ -1462,7 +1673,7 @@
       if(!q) return true;
 
       const text = [
-        month.fecha, longDate(month.fecha),
+        month.fecha, longDate(month.fecha), monthTitle(month.fecha),
         ...month.items.flatMap(i => [i.concepto,i.monto,i.estado,i.pagado,i.fechaPago,i.banco,i.nota])
       ].join(" ").toLowerCase();
 
@@ -1476,7 +1687,7 @@
       const months = allMonths.filter(passesPublicFilters);
       document.getElementById("list").innerHTML = months.length
         ? months.map(monthCard).join("")
-        : `<div class="month"><div class="line line3">No hay resultados con esos filtros.</div></div>`;
+        : `<div class="month"><div class="line3">No hay resultados con esos filtros.</div></div>`;
     }
 
     function keyauthConfigured(){
@@ -1593,7 +1804,7 @@
       sessionStorage.removeItem(ADMIN_SESSION_KEY);
       document.body.classList.remove("admin-on");
       document.getElementById("title").textContent = "Lista de Pagos";
-      document.getElementById("subtitle").textContent = "Vista simple por mes con conceptos, transferencias y notas.";
+      document.getElementById("subtitle").textContent = "Toca cada mes para ver el detalle completo.";
       renderPublic();
       toast("Admin cerrado");
     }
@@ -2094,4 +2305,6 @@
     }else{
       renderPublic();
     }
-  </script></body></html>
+  </script>
+</body>
+</html>
